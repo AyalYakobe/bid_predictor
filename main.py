@@ -1,68 +1,48 @@
-import numpy as np
-import pandas as pd
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
+import pandas as pd
+import numpy as np
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.stattools import adfuller
 
-def prepare_data(df):
-    # Convert timestamp into a datetime object and sort data
-    df['Collection Week'] = pd.to_datetime(df['Collection Week'])
-    df.sort_values(by=['Subject', 'Collection Week'], inplace=True)
 
-    # Create lag features or differences that might indicate changes over time
-    df['Previous_Diagnosis'] = df.groupby('Subject')['Diagnosis'].shift(1)
-    df.fillna({'Previous_Diagnosis': 'No Diagnosis'}, inplace=True)  # Fill NA for first entry of each patient
+def predict_microbiome_state(filepath, target_column, date_column, order=(1, 1, 1), forecast_steps=5):
 
-    return df
+    # Load data with specified dtype for problematic columns if known
+    # Example: df = pd.read_csv(filepath, dtype={'Column1': float, 'Column6': float})
+    df = pd.read_csv(filepath, low_memory=False)  # Set low_memory to False if unsure
 
-def future_ibd():
-    # Load data
-    df = pd.read_csv('LiuLloydGevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy.csv')
+    # Convert date column to datetime and ensure it's sorted
+    df[date_column] = pd.to_datetime(df[date_column])
+    df.sort_values(by=date_column, inplace=True)  # Ensure data is sorted
+    df.set_index(date_column, inplace=True)
 
-    # Assuming the first 5 columns are 'Sample', 'Diagnosis', 'Sex', 'Age', 'Sample Type', 'Timestamp'
-    feature_columns = df.columns[5:-1].copy()  # Ensure to make a copy of the columns
-    X = df[feature_columns].copy()  # Ensure to make a copy of the DataFrame slice
-    y = df['Diagnosis'].copy()  # Ensure to make a copy of the Series
+    # Setting a frequency for the datetime index (e.g., 'W' for weekly data)
+    df.index = pd.DatetimeIndex(df.index).to_period('W')  # Change 'W' based on your data frequency
 
-    # One-hot encode categorical variables
-    X_encoded = pd.get_dummies(X, columns=[col for col in X.columns if X[col].dtype == 'object'])
+    # Select the target variable
+    target = df[target_column].dropna()
 
-    # Handle missing values
-    X_encoded.fillna(X_encoded.mean(), inplace=True)
+    # Check for stationarity
+    result = adfuller(target)
+    print('ADF Statistic: %f' % result[0])
+    print('p-value: %f' % result[1])
 
-    # Check and handle infinite values
-    X_encoded.replace([np.inf, -np.inf], np.nan, inplace=True)
-    X_encoded.fillna(X_encoded.mean(), inplace=True)
+    # Differencing if necessary
+    if result[1] > 0.05:
+        target = target.diff().dropna()
 
-    # Scale data
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X_encoded)
+    # Fit ARIMA model
+    model = ARIMA(target, order=order)
+    model_fit = model.fit()
 
-    # Split data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+    # Forecast
+    forecast = model_fit.forecast(steps=forecast_steps)
 
-    # Train classifier
-    classifier = RandomForestClassifier(random_state=42)
-    classifier.fit(X_train, y_train)
+    return forecast
 
-    # Evaluate classifier
-    y_pred = classifier.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    print("###########FOR FUTURE PREDICTIONS#############")
-    print(f"Accuracy: {accuracy:.2f}")
-
-    # Cross-validation for more robust evaluation
-    scores = cross_val_score(classifier, X_scaled, y, cv=5)
-    print(f"Average Cross-Validated Accuracy: {scores.mean():.2f}")
-
-    # Get feature importances
-    feature_importances = classifier.feature_importances_
-    importance_df = pd.DataFrame(feature_importances, index=X_encoded.columns, columns=['Importance'])
-    importance_df = importance_df.sort_values(by='Importance', ascending=False)
-    print("Top 20 features by importance:")
-    for index, row in importance_df.head(21).iterrows():
-        print(f"{index}: {row['Importance']:.6f}")
 
 def current_ibd():
     # Load data
@@ -114,4 +94,10 @@ def current_ibd():
 
 if __name__ == '__main__':
     #current_ibd()
-    future_ibd()
+    # future_microbiome_state()
+
+    file_path = 'LiuLloydGevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy.csv'
+    target_column = 'Bacteria;Firmicutes;Clostridia'
+    date_column = 'Collection Week'
+    forecast = predict_microbiome_state(file_path, target_column, date_column)
+    print(forecast)
