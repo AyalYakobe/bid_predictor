@@ -16,20 +16,25 @@ def analyze_time_series_data(filepath):
     analyze_subject_repetitions(filepath)
 
 def analyze_subject_repetitions(filepath):
+    # Load and preprocess data
     df = pd.read_csv(filepath)
     df.dropna(inplace=True)
 
     print(f"DataFrame shape after preprocessing: {df.shape}")
 
+    # Get counts of each 'Subject' value
     subject_counts = df['Subject'].value_counts()
 
-    average_repeats = subject_counts.mean()
+    # Filter subjects that appear more than once
+    repeating_subjects = subject_counts[subject_counts > 1]
+
+    # Calculate the average number of repeats
+    average_repeats = repeating_subjects.mean()
 
     print("Counts of repeating 'Subject' entries:")
-    print(subject_counts)
     print(f"Average number of repeats per subject: {average_repeats:.2f}")
 
-    return df, subject_counts, average_repeats
+    return df, repeating_subjects, average_repeats
 
 
 def print_bacteria(file_path):
@@ -52,7 +57,7 @@ def filtering(file_path, bacteria_of_interest):
 
     print("Columns retained after filtering:", filtered_df.columns.tolist())
 
-def prepare_and_run_var(filepath, datetime_col, numeric_cols_prefix='Bacteria', use_pca=True):
+def prepare_and_run_var(filepath, datetime_col, numeric_cols_prefix='Bacteria'):
     df = pd.read_csv(filepath)
     df[datetime_col] = pd.to_datetime(df[datetime_col], errors='coerce')
     df.sort_values(by=datetime_col, inplace=True)
@@ -66,15 +71,6 @@ def prepare_and_run_var(filepath, datetime_col, numeric_cols_prefix='Bacteria', 
 
     numeric_cols = [col for col in df.columns if numeric_cols_prefix in col]
     df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='coerce')
-
-    df.dropna(subset=numeric_cols, inplace=True)
-    if use_pca and df.shape[1] > 1 and df.shape[0] > 1:
-        n_components = min(df.shape[0], df.shape[1], 5)
-        pca = PCA(n_components=n_components)
-        df[numeric_cols] = pca.fit_transform(df[numeric_cols])
-        numeric_cols = ['PC' + str(i) for i in range(n_components)]
-    elif use_pca:
-        print("Not enough data for PCA. Proceeding without PCA.")
 
     df_numeric = df[numeric_cols]
 
