@@ -2,7 +2,7 @@ import pandas as pd
 import string
 import numpy as np
 
-df = pd.read_csv('Liu/SraRunTable_Liu_Metadata.txt', header=None)
+df = pd.read_csv('data/metadata_files/SraRunTable_Liu_Metadata.txt', header=None)
 df=df.iloc[1:,:]
 
 Metadata=[]
@@ -28,12 +28,12 @@ for entry in range(len(df)):
 
 
 
-df2 = pd.read_csv('Lloyd-Price(HMP2)/SraRunTable_Lloyd-Price_Metadata.txt', header=None)
+df2 = pd.read_csv('data/metadata_files/SraRunTable_Lloyd-Price_Metadata.txt', header=None)
 
 df4=df2.iloc[1:,:]
 filtered_df2 = df2[df2.iloc[:, 0].astype(str).str.startswith('SRR67')]
 
-df5 = pd.read_csv('HMP2/hmp2_metadata_2018-08-20_Lloyd-Price_Metadata.csv', header=None, low_memory=False)
+df5 = pd.read_csv('data/metadata_files/hmp2_metadata_2018-08-20_Lloyd-Price_Metadata.csv', header=None, low_memory=False)
 filtered_df5 = df5[df5.iloc[:, 4].astype(str).str.startswith('biopsy')]
 
 for entry in range(len(filtered_df2)):
@@ -57,13 +57,13 @@ for entry in range(len(filtered_df2)):
     Metadata.append([filtered_df2.iloc[entry,0],subject, collectionWeek, status, sex,age, type ])
 
 
-df7 = pd.read_csv('Gevers1/1-s2.0-S1931312814000638-mmc2_Gevers1_Metadata.csv', header=None)
+df7 = pd.read_csv('data/metadata_files/1-s2.0-S1931312814000638-mmc2_Gevers1_Metadata.csv', header=None)
 
-df8 = pd.read_csv('Gevers1/SraRunTable_Gevers1_Metadata.txt', header=None)
+df8 = pd.read_csv('data/metadata_files/SraRunTable_Gevers1_Metadata.txt', header=None)
 print(df8.iloc[:,:7])
-df9 = pd.read_csv('Gevers1/1939_20230206-083256_Gevers1_Metadata.txt',sep='\t', header=None)
+df9 = pd.read_csv('data/metadata_files/1939_20230206-083256_Gevers1_Metadata.txt',sep='\t', header=None)
 
-df10 = pd.read_csv('Gevers1/1998_20230206-084333_Gevers1_Metadata.txt',sep='\t', header=None)
+df10 = pd.read_csv('data/metadata_files/1998_20230206-084333_Gevers1_Metadata.txt',sep='\t', header=None)
 
 
 UsefulAccessions={}
@@ -179,7 +179,7 @@ SRAs175=sorted(SRAs175)
 addToMetadata=sorted(addToMetadata, key=lambda x: x[0])
 Metadata.extend(addToMetadata)
 
-filename = "SRAsUsed.txt"
+filename = "data/metadata_files/Gevers1_accession.txt"
 
 
 # Writing the list elements to the text file

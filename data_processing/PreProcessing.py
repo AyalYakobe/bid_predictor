@@ -2,7 +2,9 @@ import pandas as pd
 import string
 import numpy as np
 
-dfFinal=pd.read_csv("LiuLloydGevers1_AbundanceData_WSpecies_WMetadata_IBD.csv", header=None, low_memory=False)
+#This is for the total data LIuLloydGevers1
+#used to treat other datasets by changing some row values and editing out some Gevers specific lines
+dfFinal=pd.read_csv("data/LiuLloydGevers1_AbundanceData_WSpecies_WMetadata_IBD.csv", header=None, low_memory=False)
 
 
 section = dfFinal.iloc[1:1169, 7:]
@@ -47,4 +49,4 @@ for col in dfFinal.columns[8:]:
         dfFinal.iloc[259:, col] = np.nan 
 
 
-dfFinal.to_csv("LiuLloydGevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv", index=False, na_rep='NaN')
+dfFinal.to_csv("data/LiuLloydGevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv", index=False, na_rep='NaN')

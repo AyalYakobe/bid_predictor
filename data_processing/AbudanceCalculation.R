@@ -3,6 +3,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("dada2", version = "3.18")
 library(dada2); packageVersion("dada2")
 # Liu
+#local path for .fastq files
 path<-"~/Downloads/CompGenomicsProject/Liu/Liu"
 list.files(path)
 fnFs <- sort(list.files(path, pattern="_1.fastq$", full.names = TRUE))
@@ -16,6 +17,7 @@ plotQualityProfile(fnRs[1])
 filtFs <- file.path(path, "filtered1", paste0(sample.names, "_1_filt.fastq.gz"))
 filtRs <- file.path(path, "filtered1", paste0(sample.names, "_2_filt.fastq.gz"))
 path <- "~/Downloads/CompGenomicsProject/Liu/Liu/filtered1"
+#local output path of filtered .fastq.gz files
 filtFs<- sort(list.files(path, pattern="1_filt.fastq\\.gz$", full.names = TRUE))
 filtRs<- sort(list.files(path, pattern="2_filt.fastq\\.gz$", full.names = TRUE))
 names(filtFs) <- sample.names
@@ -46,8 +48,9 @@ track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, 
 colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
 rownames(track) <- sample.names
 head(track)
-taxa <- assignTaxonomy(seqtab.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxa <- addSpecies(taxa, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+#path for taxonomic data within github directory
+taxa <- assignTaxonomy(seqtab.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxaWSpecies <- addSpecies(taxa, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 BiocManager::install("phyloseq")
 BiocManager::install("ggplot2")
 library(phyloseq); packageVersion("phyloseq")
@@ -60,6 +63,7 @@ tax_info <- apply(tax_table, 1, function(x) paste(na.omit(x), collapse = ";"))
 colnames(abundance_matrix) <- tax_info
 
 #Lloyd-Price
+#local path with .fastq.gz files
 path<-"~/Downloads/CompGenomicsProject/Lloyd-Price(HMP2)/Lloyd"
 list.files(path)
 fnFs2.2<- sort(list.files(path, pattern="^SRR67.*\\_1.fastq\\.gz$", full.names = TRUE))
@@ -94,8 +98,8 @@ track2.2 <- cbind(out2.2, sapply(dadaFs2.2, getN), sapply(dadaRs2.2, getN), sapp
 colnames(track2.2) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
 rownames(track2.2) <- sample2.2.names
 head(track2.2)
-taxa2.2 <- assignTaxonomy(seqtab2.2.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxaWSpecies2.2 <- addSpecies(taxa2.2, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+taxa2.2 <- assignTaxonomy(seqtab2.2.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxaWSpecies2.2 <- addSpecies(taxa2.2, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 ps2.2 <- phyloseq(otu_table(seqtab2.2.nochim, taxa_are_rows=FALSE), sample2.2.names, tax_table(taxa2.2))
 
 taxa_names_physeq1 <- taxa_names(ps)
@@ -158,31 +162,10 @@ tax_info_spec <- apply(tax_table_spec, 1, function(x) paste(na.omit(x), collapse
 colnames(abundance_matrix_merged_spec) <- tax_info_spec
 write.csv(abundance_matrix_merged_spec, file = "abundance_data_with_taxonomy_wspecies.csv", row.names = TRUE)
 
-
-taxa_names_physeq1_WSpec <- taxa_names(psWSpec)
-taxa_names_physeq2_WSpec <- taxa_names(psWSpec2.2)
-shared_taxa <- intersect(taxa_names_physeq1_WSpec, taxa_names_physeq2_WSpec)
-# Subset phyloseq objects to keep only shared taxa
-merged_physeq_spec_onlyShared <- merge_phyloseq(physeq1_shared, physeq2_shared, taxa_are_rows = FALSE, common_by_taxa = TRUE)
-abundance_matrix_merged_spec_onlyShared <- as.data.frame(otu_table(merged_physeq_spec_onlyShared))
-tax_table_spec_onlyShared <- tax_table(merged_physeq_spec_onlyShared)
-tax_info_spec_onlyShared <- apply(tax_table_spec_onlyShared, 1, function(x) paste(na.omit(x), collapse = ";"))
-colnames(abundance_matrix_merged_spec_onlyShared) <- tax_info_spec_onlyShared
-write.csv(abundance_matrix_merged_spec_onlyShared, file = "abundance_data_with_taxonomy_wspecies_onlyShared.csv", row.names = TRUE)
-
-abundance_matrix_psWspec <- as.data.frame(otu_table(psWSpec))
-abundance_matrix_psWspec2.2 <- as.data.frame(otu_table(psWSpec2.2))
-tax_tablepsWSpec <- tax_table(psWSpec)
-tax_infopsWSpec <- apply(tax_tablepsWSpec, 1, function(x) paste(na.omit(x), collapse = ";"))
-colnames(abundance_matrix_psWspec) <- tax_infopsWSpec
-
-
-
-
-
-
-
-file_contents <- readLines("/Users/harrisonfried/Downloads/CompGenomicsProject/SRAsUsed.txt")
+#Gevers 1. Dereplication requires batching of 910 files into 6 batches of 150 with last 160 samples.
+#file in github
+file_contents <- readLines("data/accession_files/Gevers1_Accession.txt")
+#path is local directory with .fastq.gz files
 path<-"/Users/harrisonfried/Downloads/CompGenomicsProject/Gevers1/Gevers1/"
 list.files(path)
 fnFs3 <- sort(list.files(path, pattern="_1.fastq.gz", full.names = TRUE))
@@ -327,25 +310,24 @@ head(track3.6)
 rm(derepRs3.6)
 rm(derepFs3.6)
 
-taxa3.1 <- assignTaxonomy(seqtab3.1.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxa3.1 <- addSpecies(taxa3.1, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+taxa3.1 <- assignTaxonomy(seqtab3.1.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxa3.1 <- addSpecies(taxa3.1, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 ps3.1 <- phyloseq(otu_table(seqtab3.1.nochim, taxa_are_rows=FALSE), sample3.names[0:150], tax_table(taxa3.1))
-taxa3.2 <- assignTaxonomy(seqtab3.2.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxa3.2 <- addSpecies(taxa3.2, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+taxa3.2 <- assignTaxonomy(seqtab3.2.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxa3.2 <- addSpecies(taxa3.2, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 ps3.2 <- phyloseq(otu_table(seqtab3.2.nochim, taxa_are_rows=FALSE), sample3.names[151:300], tax_table(taxa3.2))
-taxa3.3 <- assignTaxonomy(seqtab3.3.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxa3.3 <- addSpecies(taxa3.3, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+taxa3.3 <- assignTaxonomy(seqtab3.3.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxa3.3 <- addSpecies(taxa3.3, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 ps3.3 <- phyloseq(otu_table(seqtab3.3.nochim, taxa_are_rows=FALSE), sample3.names[301:450], tax_table(taxa3.3))
-taxa3.4 <- assignTaxonomy(seqtab3.4.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxa3.4 <- addSpecies(taxa3.4, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+taxa3.4 <- assignTaxonomy(seqtab3.4.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxa3.4 <- addSpecies(taxa3.4, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 ps3.4 <- phyloseq(otu_table(seqtab3.4.nochim, taxa_are_rows=FALSE), sample3.names[451:600], tax_table(taxa3.4))
-taxa3.5 <- assignTaxonomy(seqtab3.5.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxa3.5 <- addSpecies(taxa3.5, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+taxa3.5 <- assignTaxonomy(seqtab3.5.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxa3.5 <- addSpecies(taxa3.5, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 ps3.5 <- phyloseq(otu_table(seqtab3.5.nochim, taxa_are_rows=FALSE), sample3.names[601:750], tax_table(taxa3.5))
-taxa3.6 <- assignTaxonomy(seqtab3.6.nochim, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
-taxa3.6 <- addSpecies(taxa3.6, "~/Downloads/CompGenomicsProject/Liu/Liu/taxa/silva_species_assignment_v138.1.fa.gz")
+taxa3.6 <- assignTaxonomy(seqtab3.6.nochim, "data/SILVA_Assign_Taxa_Files/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+taxa3.6 <- addSpecies(taxa3.6, "data/SILVA_Assign_Taxa_Files/silva_species_assignment_v138.1.fa.gz")
 ps3.6 <- phyloseq(otu_table(seqtab3.6.nochim, taxa_are_rows=FALSE), sample3.names[751:910], tax_table(taxa3.6))
-
 
 taxa_names_physeq3.1 <- taxa_names(ps3.1)
 taxa_names_physeq3.2 <- taxa_names(ps3.2)
