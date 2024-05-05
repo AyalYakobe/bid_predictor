@@ -7,7 +7,7 @@ import numpy as np
 
 def current_ibd(path):
     df = pd.read_csv(path, low_memory=False)
-
+    #t###TTTEE
     # Select columns for microbiome data
     microbiome_data = df.columns[5:55]
     X = df[microbiome_data]
