@@ -1,8 +1,6 @@
 from scripts.classify_ibd import current_ibd
 from scripts.future_microbiome_state import print_bacteria, prepare_and_run_var, analyze_time_series_data, filtering
 
-# average number of ids hat repeat and the amounts that they repeat (cut out data that's 1 and take average)
-
 def current_ibd_analysis():
     current_ibd('data/LiuLloyd_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv')
     current_ibd('data/Gevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv')
