@@ -1,5 +1,5 @@
 from scripts.classify_ibd import current_ibd
-from scripts.future_microbiome_state import print_bacteria, prepare_and_run_var, analyze_time_series_data
+from scripts.future_microbiome_state import print_bacteria, prepare_and_run_var, analyze_time_series_data, filtering
 
 
 def current_ibd_analysis():
@@ -9,15 +9,15 @@ def current_ibd_analysis():
 
 def var_attempt():
     top = print_bacteria('data/bacteria.txt')
-    filter('data/Gevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized.csv', top)
+    filtering('data/Gevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized.csv', top)
 
-    file_path = 'filtered.csv'
+    file_path = 'data/filtered.csv'
     datetime_column = 'Collection Week'
     prepared_data, var_results = prepare_and_run_var(file_path, datetime_column)
 
     if var_results:
         print(var_results.summary())
-    analyze_time_series_data('filtered.csv')
+    analyze_time_series_data('data/filtered.csv')
 
 
 

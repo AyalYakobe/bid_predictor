@@ -1,4 +1,3 @@
-import numpy as np
 from sklearn.decomposition import PCA
 import pandas as pd
 from statsmodels.tsa.vector_ar.var_model import VAR
@@ -46,10 +45,10 @@ def print_bacteria(file_path):
 
     return top_50ish
 
-def filter(file_path, bacteria_of_interest):
+def filtering(file_path, bacteria_of_interest):
     df = pd.read_csv(file_path)
     filtered_df = df[bacteria_of_interest]
-    filtered_df.to_csv('filtered.csv', index=False)
+    filtered_df.to_csv('data/filtered.csv', index=False)
 
     print("Columns retained after filtering:", filtered_df.columns.tolist())
 
