@@ -3,7 +3,7 @@ from scripts.future_microbiome_state import print_bacteria, prepare_and_run_var,
 
 def current_ibd_analysis():
     current_ibd('data/LiuLloyd_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv')
-    current_ibd('data/Gevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv')
+    current_ibd('data/LiuLloydGevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv.csv')
     current_ibd('data/Gevers1_AbudanceData_WSpecies_WMetadata_IBD_Normalized.csv')
 
 def var_attempt():
