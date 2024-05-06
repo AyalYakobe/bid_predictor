@@ -40,13 +40,21 @@ Located within this folder are the datasets necessary for running the classifica
 Furthermore, the following .csv files for the three primary datasets (Liu/Lloyd-Price, Liu/Lloyd-Price/Gevers1, and Gevers1) following DADA2 abundance calculation:
 
 `abundance_data_with_taxonomy_wspecies_LiuLloyd.csv`- Output from AbundanceCalculation.R following DADA2 for data from the Liu and Lloyd-Price datasets.
+
 `abundance_data_with_taxonomy_wspecies_LiuLloydGevers1.csv`- Output from AbundanceCalculation.R following DADA2 for data from the Liu, Lloyd-Price, and Gevers datasets.
+
 `abundance_data_with_taxonomy_wspecies_Gevers1.csv`- Output from AbundanceCalculation.R following DADA2 for data from the Gevers dataset.
+
 `LiuLloyd_AbundanceData_WSpecies_WMetadata_IBD.csv`- Output following combining output from Metadata.py when adapted to the Liu and Lloyd-Price datasets with the corresponding abundance data. Input for PreProcessing.py.
+
 `LiuLloydGevers1_AbundanceData_WSpecies_WMetadata_IBD.csv`- Output following combining output from Metadata.py when adapted to the Liu, Lloyd-Price, and Gevers datasets with the corresponding abundance data. Input for PreProcessing.py.
+
 `Gevers1_AbundanceData_WSpecies_WMetadata_IBD.csv`- Output following combining output from Metadata.py when adapted to the Gevers datasets with the corresponding abundance data. Input for PreProcessing.py.
+
 `LiuLloyd_AbundanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv`- Output following PreProcessing.py when adapted to respective input file for Liu and Lloyd-Price datasets. Rows are normalized to get relative abundance, taxa not in a study are set to NaN, and study metadata is added.
+
 `LiuLloydGevers1_AbundanceData_WSpecies_WMetadata_IBD_Normalized_WStudy_WNA.csv`- Output following PreProcessing.py when adapted to respective input file for Liu, Lloyd-Price, and Gevers1 datasets. Rows are normalized to get relative abundance, taxa not in a study are set to NaN, and study metadata is added.
+
 `LiuLloyd_AbundanceData_WSpecies_WMetadata_IBD_Normalized.csv`- Output following PreProcessing.py when adapted to respective input file for Gevers dataset. Rows are normalized to get relative abundance. Since only one study, taxa not in a study are not set to NaN and study metadata is not added.
 
 Additionally, subfolder `accession_files` contains the text files set to accession_file in order for .sra bash script to run. Lastly, `metadata_files` contains metadata files used by Metadata.py and are labeled by their respective study. 
